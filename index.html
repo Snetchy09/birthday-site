@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Countdown & Game 🎉</title>
+<style>
+/* ----------------- أسلوب الصفحة ----------------- */
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+body{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  background: linear-gradient(270deg,#ff0080,#7928ca,#2afadf);
+  background-size:600% 600%;
+  animation:bg 12s ease infinite;
+  color:white;text-align:center;overflow-x:hidden;
+}
+@keyframes bg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+h1{font-size:2rem;margin:20px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+.countdown{display:flex;gap:10px;margin-bottom:20px;}
+.box{flex:1;background:rgba(255,255,255,0.15);padding:10px;border-radius:15px;backdrop-filter:blur(5px);}
+.num{font-size:1.8rem;font-weight:bold;}
+.label{font-size:0.7rem;opacity:0.8;}
+.msg{margin-top:10px;font-size:1.1rem;}
+
+/* ----------------- منطقة اللعبة ----------------- */
+#gameArea{
+  position:relative;width:100%;height:200px;background:#222;margin-top:20px;overflow:hidden;
+}
+#player{position:absolute;bottom:0;left:50px;width:32px;height:32px;}
+
+/* ----------------- confetti ----------------- */
+.confetti{position:absolute;width:10px;height:10px;background:yellow;animation:fall 3s linear forwards;}
+@keyframes fall{0%{top:-10px}100%{top:200px}}
+</style>
+</head>
+<body>
+
+<h1>🎂 Birthday Countdown & Game 🎂</h1>
+
+<div class="countdown">
+  <div class="box"><div class="num" id="d">0</div><div class="label">Days</div></div>
+  <div class="box"><div class="num" id="h">0</div><div class="label">Hours</div></div>
+  <div class="box"><div class="num" id="m">0</div><div class="label">Minutes</div></div>
+  <div class="box"><div class="num" id="s">0</div><div class="label">Seconds</div></div>
+</div>
+
+<div class="msg" id="msg">⏳ Waiting for the big day…</div>
+
+<div id="gameArea">
+  <img id="player" src="hijabi_pixel.png">
+</div>
+
+<script>
+/* ----------------- العدّاد ----------------- */
+const birthday = new Date("2026-02-10T00:00:00"); // عدّل التاريخ هنا
+const dEl = document.getElementById("d"), hEl = document.getElementById("h"), mEl = document.getElementById("m"), sEl = document.getElementById("s");
+const msg = document.getElementById("msg");
+
+function updateCountdown(){
+  const now=new Date();const diff=birthday-now;
+  if(diff<=0){triggerBirthday();return;}
+  const d=Math.floor(diff/(1000*60*60*24));
+  const h=Math.floor((diff/(1000*60*60))%24);
+  const m=Math.floor((diff/(1000*60))%60);
+  const s=Math.floor((diff/1000)%60);
+  dEl.textContent=d; hEl.textContent=h; mEl.textContent=m; sEl.textContent=s;
+  if(d>3) msg.textContent="😴 Still some time…"; else if(d>0) msg.textContent="👀 It's getting close…"; else msg.textContent="🔥 TODAY 🔥";
+}
+setInterval(updateCountdown,1000);
+updateCountdown();
+
+/* ----------------- mini-game ----------------- */
+const player = document.getElementById("player");
+let posX = 50;
+document.addEventListener("keydown",(e)=>{
+  if(e.key==="ArrowLeft") posX-=5;
+  if(e.key==="ArrowRight") posX+=5;
+  if(posX<0) posX=0;
+  if(posX>window.innerWidth-32) posX=window.innerWidth-32;
+  player.style.left=posX+"px";
+});
+
+/* ----------------- spawn stars ----------------- */
+function spawnStar(){
+  const star = document.createElement("div");
+  star.textContent="⭐";
+  star.style.position="absolute";
+  star.style.top=Math.random()*100+"px";
+  star.style.left=Math.random()*window.innerWidth+"px";
+  document.getElementById("gameArea").appendChild(star);
+  setTimeout(()=>star.remove(),5000);
+}
+setInterval(spawnStar,2000);
+
+/* ----------------- confetti عند الصفر ----------------- */
+function triggerBirthday(){
+  document.body.innerHTML="<h1 style='font-size:3rem'>🎉 HAPPY BIRTHDAY 🎉</h1>";
+  for(let i=0;i<100;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*window.innerWidth+"px";
+    c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+    document.body.appendChild(c);
+  }
+}
+</script>
+
+</body>
+</html>
